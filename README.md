@@ -22,7 +22,7 @@ Apart from pygame and python 3.10
 
 ## Install
 
-`pip install pygame-screen-recorder`
+`pip install pygame-screen-record`
 
 ## To-Dos
 
