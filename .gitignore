@@ -2,3 +2,4 @@ dev
 __pycache__
 .mypy_cache
 dist
+pygame_screen_record.egg-info

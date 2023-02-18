@@ -149,7 +149,7 @@ You can choose to compress your recordings like this
 recorder = ScreenRecorder(compress=2) # fps defaults to 60 
 ```
 
-What does that mean? It means that every frame will be scaled down `2`-times by two. This reduces the total memory consumption by 2² = 16! But normally you will only compress by one or not compress at all. The recordings will automatically be decompressed when played or saved. So don't worry about that. Just try out whether the loss in resolution is okay for your needs.
+What does that mean? It means that every frame will be scaled down `2`-times by two. This reduces the total memory consumption by `2^(2^2) = 16`! But normally you will only compress by one or not compress at all. The recordings will automatically be decompressed when played or saved. So don't worry about that. Just try out whether the loss in resolution is okay for your needs.
 
 ## Stream recordings
 
