@@ -2,11 +2,11 @@
 
 ## Why you should use this module?
 
-1. Relatively high accuracy through threading
+1. Relatively high accuracy
 2. No (noticable) performance issues
+3. Recording FPS is not bound to game FPS
 3. Straightforward usage
 4. Codebase is well commented and typed
-5. Educational tutorial
 
 ## Why you shouldn't use this module?
 
@@ -15,19 +15,14 @@
 
 ## Dependencies
 
-```txt
 Apart from pygame and python 3.10
 
-- opencv-python 
-    - includes numpy
-
-(- FFmpeg if you want to save videos) 
-```
+1. opencv-python (includes numpy)
+2. FFmpeg if you want to save videos
 
 ## Install
 
-You just need `ScreenRecorder.py` and have `opencv` installed and you are ready to go.
-Maybe I will add a pip install in the future.
+`pip install pygame-screen-recorder`
 
 ## To-Dos
 
@@ -39,9 +34,9 @@ Maybe I will add a pip install in the future.
 
 ## Contributing
 
-File any bugs or feature requests as GitHub issues. After your idea was approved you can start working on a solution and make a pull request. The codebase is pretty simple and easy to get a hold of.
+File any bugs or feature requests as GitHub issues. After your idea was approved, we can start working on a solution and make a pull request. The codebase is pretty simple and easy to get ahold of.
 
-# Full Documentation / Tutorial
+# How To Use
 
 Most users just want to make a recording of their game and save it in a video file. Here comes how.
 
@@ -114,12 +109,12 @@ save_recording(recording,("my_recording","mp4"))
 ```
 is equivalent to
 ```python
-recorder.stop_rec().get_single_recording().save("my_recording","mp4"))
+recorder.stop_rec().get_single_recording().save("my_recording","mp4")
 ```
 
 ## Short word on types
 
-1. My whole codebase is typed -> If you want to contribute use types too
+1. The whole codebase is typed -> If you want to contribute use types too
 1. AnyPath means any type that can be a file or directory  `str | int | bytes` normally.
 2. For me, `pg.Surface` is equivalent to `pg.surface.Surface`. (mypy thinks differently)
 
@@ -476,6 +471,3 @@ finally:
 ```
 
 Now to replay that exact recorded game. Just swap `in` with `out` when instanciating the `reg` object and everything should work exactly as expected.
-
-
-

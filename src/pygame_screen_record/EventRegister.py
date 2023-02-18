@@ -4,13 +4,14 @@ import logging
 import random
 import time
 from typing import Any, Callable, Iterable, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple
 import pygame as pg
 
 ################################################################################################
 # helpers
 
-def skip_none(x,y):
+
+def skip_none(x, y):
     return y if x is None else x
 
 
@@ -137,16 +138,20 @@ for attr, d in defaults.items():
         def_lookup[event][attr] = d["value"]
 
 
-def single_compress(se: SavedEvent):
+def single_compress(se: SavedEvent) -> SavedEvent:
+    """
+    Mutates the given SavedEvent and returns it
+    """
     if (default := def_lookup.get(se.type)) is not None:
         eit = safe_item_set(se.attrs)
-        attrs = {k: v for k, v in (eit - (eit & safe_item_set(default)))}
-        return se.type, attrs, se.time
-    else:
-        return se.type, se.attrs, se.time
+        se.attrs = {k: v for k, v in (eit - (eit & safe_item_set(default)))}
+    return se
 
 
 def single_decompress(se: SavedEvent):
+    """
+    Mutates the given SavedEvent and returns it
+    """
     if (d := def_lookup.get(se.type)) is not None:
         se.attrs |= d
     return se
@@ -292,7 +297,7 @@ class EventRegister:
             if not self.rec_events[-1].type == pg.QUIT:
                 logging.debug("Saving but PyGame hasn't finished yet")
                 self.rec_events.append((pg.QUIT, {}, self.rec_events[-1][2] + 0.1))
-            events = [single_compress(x) for x in self.rec_events]
+            events = [astuple(single_compress(x)) for x in self.rec_events]
             write({"events": events, "random_seed": self.random_seed}, self.path)
         else:
             pg.mouse.get_focused = old_events["mouse_foc"]

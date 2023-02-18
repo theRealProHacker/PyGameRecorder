@@ -17,23 +17,22 @@ from sys import getsizeof
 import pygame as pg
 from math import sin
 import time
-from ScreenRecorder import ScreenRecorder, play_n_wrapper, save_recording, RecordingPlayer
+from pygame_screen_record.ScreenRecorder import ScreenRecorder, RecordingPlayer
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
 running = True
+
+
 def main():
     global running
     # initialize and setup screen
     pg.init()
     screen = pg.display.set_mode((640, 480))
 
-    """ Here we insert the recorder init with 60 fps. Play around with the compress to get an impression on the change that makes """
-    recorder = ScreenRecorder(60,compress=0)
-
     # load image and quadruple
-    imagename = "liquid.bmp"  
+    imagename = "liquid.bmp"
     bitmap = pg.image.load(imagename)
     bitmap = pg.transform.scale2x(bitmap)
     bitmap = pg.transform.scale2x(bitmap)
@@ -51,7 +50,11 @@ def main():
     xblocks = range(0, 640, 20)
     yblocks = range(0, 480, 20)
 
-    """ Here we start the recording """
+    """ 
+    Here we start the recording. 
+    Play around with the fps and the compress to get an impression on the change that makes
+    """
+    recorder = ScreenRecorder(24, compress=1)
     recorder.start_rec()
 
     try:
@@ -60,6 +63,8 @@ def main():
             for e in pg.event.get():
                 if e.type == pg.QUIT:
                     running = False
+                elif e.type == pg.KEYDOWN:
+                    running = False
 
             anim = anim + 0.02
             for x in xblocks:
@@ -67,26 +72,22 @@ def main():
                 for y in yblocks:
                     ypos = (y + (sin(anim + y * 0.01) * 15)) + 20
                     screen.blit(bitmap, (x, y), (xpos, ypos, 20, 20))
-            if not running: screen.fill((0,)*3)
+            if not running:
+                screen.fill((0,) * 3)
             pg.display.flip()
             time.sleep(0.01)
-    finally: 
+    finally:
         recorder.stop_rec()
 
-        
     """ 
-    Now the recording finished and we save the recording. 
+    Now the recording has finished and we save the recording. 
     The screen will be black as long as the saving takes
     """
     recording = recorder.get_single_recording()
     print(getsizeof(recording))
-    recording.save(("my_recording","mp4"))
-    """ Now we replay the recording """
-    @play_n_wrapper(2)
-    def on_stop():
-        print("Finished playing")
-        return False # stop the second repeat
-    player = RecordingPlayer(recording,on_stop)
+    recording.save(("my_recording1", "mp4"))
+
+    player = RecordingPlayer(recording)
     player.play()
     try:
         running = True
@@ -94,14 +95,10 @@ def main():
             for e in pg.event.get():
                 if e.type == pg.QUIT:
                     running = False
+            pg.display.flip()
             time.sleep(0.01)
     finally:
         player.stop()
-    return
-
-            
-
-
 
 
 if __name__ == "__main__":
