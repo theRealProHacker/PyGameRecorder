@@ -84,7 +84,6 @@ finally:
     save_recording(recording,("my_recording","mp4")) # save the recording as mp4
     clean_up()
     pg.quit()
-
 ```
 
 This code will record your screen the whole game and then save it in the current working directory as `my_recording.mp4`.
@@ -101,13 +100,17 @@ is equivalent to
 ```python
 recorder = ScreenRecorder(60).start_rec()
 ```
+
 And
+
 ```python
 recorder.stop_rec()
 recording = recorder.get_single_recording()
 save_recording(recording,("my_recording","mp4"))
 ```
+
 is equivalent to
+
 ```python
 recorder.stop_rec().get_single_recording().save("my_recording","mp4")
 ```
@@ -261,11 +264,14 @@ recordings = recorder.get_recordings()
 saver = RecordingSaver(recordings, "mp4", "saved_files")
 saver.save()
 ```
+
 Saves the given recordings as `mp4` files in `./saved_files`  
 We learned that there is a convenient way to do anything. Just call 
+
 ```python
 saved_recordings = recorder.save_recordings("mp4", "saved_files")
 ```
+
 ## Explanation
 
 - key   
@@ -280,9 +286,11 @@ saved_recordings = recorder.save_recordings("mp4", "saved_files")
 
     It is a very similar case if you give a function. The function gets an int passed and should return `None` or a `(filename,format)` tuple.  
     An example for such a key is
+
     ```python
     key = lambda x: if x%2 == 0 then None else ("recording_{x}","mp4")
     ```
+
     This will return `None` (and skip the save) for every recording with an even index. 
 - save_dir  
 The directory where the recordings will be saved. Defaults to the current working directory
@@ -317,6 +325,7 @@ join1()
 join2()
 print("Second save took:",time.time() - start)
 ```
+
 The second option is favorable because it takes less time than the first. Unfortunately, I haven't yet implemented a contextmanager for this so you will have to manually join or write your own and contribute to the project. 
 
 ## Memory Management
@@ -324,13 +333,15 @@ The second option is favorable because it takes less time than the first. Unfort
 We talked about how to efficiently save your recordings (from a time aspect). But now we talk about how you can reduce memory consumption. Generally all video recordings will be automatically compressed by FFmpeg/numpy. However, there are three ways you can reduce memory consumption:  
 1. Reduce fps. One cool thing about this ScreenRecorder is that you can record at a different framerate than you play the game. For example you can have a game frame rate of 60 fps but only record at 30 fps. This would halve the memory usage in comparison to if you recorded at 60 fps. 
 1. Resize the recording. We already established that you can halve the recording size as often as you like. But this will only reduce memory usage while the program runs. The result will still be saved in the original size. However, you can save the recording in a smaller size by using  
-`recording.resize(pg.Vector2(recording.size)/your_scale_factor)`  
-This will actually save and play the recording in that size, which might look very weird. So you might not actually want to do that. 
+    `recording.resize(pg.Vector2(recording.size)/your_scale_factor)`  
+    This will actually save and play the recording in that size, which might look very weird. 
+    So you might not actually want to do that. 
 1. Shorten the recording length. You can cut out parts of a recording like this. Lets say you only want the first 300 frames.
-```python
-recording[0:300]
-#This will actually mutate the recording. If you have issues with this then just share your concerns
-``` 
+
+    ```python
+    recording[0:300]
+    #This will actually mutate the recording. If you have issues with this then just share your concerns
+    ``` 
 1. Lastly, you can reduce the depth of the recording by reducing the depth of the recorded screen `pg.display.set_mode((900,600),depth=your_depth)`. This will definitely reduce the memory usage while the program is running and it might also reduce the memory usage on the disk. However, decreasing the depth of the screen will also decrease the variety in color. But in most amateur applications this might just not matter anyway because you are not using very nuanced colors.   
 
 # Replay recordings
@@ -345,7 +356,7 @@ Finally, I came to the conclusion that it makes no sense to write a VideoPlayer 
 
 ## Easiest way to replay a recording
 
-```
+```py
 #easiest
 player = RecordingPlayer(recording).play()
 # with an on_stop callback
@@ -363,43 +374,55 @@ Very important is that you always `stop` a player in your `finally-clause` even 
 ## Advanced `RecordingPlayer` Options
 
 ## Pausing
-You already know how to start a player. You can also pause the player with `pause`. Playing is also unpausing. 
+You already know how to start a player. You can also pause the player with `pause`. Playing is also unpausing.
+
 ```python
 player.pause() 
 ```
+
 ## Stopping
-This stops the player. As said above, always stop the player if in doubt. However, don't even try to reuse a manually stopped player. As with other objects just make a new player. It's really simple. 
+This stops the player. As said above, always stop the player if in doubt. However, don't even try to reuse a manually stopped player. As with other objects just make a new player. It's really simple.
+
 ```python
 player.stop()
 ```
+
 ## Seeking
 Seeking is known from files and means going to a certain position. 
+
 ```python
 player.seek(300) # goes to frame 300 / the 301th frame
 player.seekms(3000.0) # goes to second 3 of the recording
 ```
+
 ## Telling
 Similarly telling is also known from files and means getting the current position. 
+
 ```python
 player.tell() # Gets the current position
 player.tellms() # Gets the current position in milliseconds
 ```
+
 ## Restarting
 This method is a mixture between reviving the player after it stopped and just seeking the very first frame and playing.
+
 ```python
 player.restart()
 ```
+
 In the future, restart might take a new recording to play. But that is only a thought. 
 ## Getting state information
 The player has a `is_` function. There are two reasons for the name
 1. It resolves the conflict with the python keyword `is`
 1. It might make the code more readable, reading `player.is_("playing")` is easy to understand and nicer to implement than making individual function for every possible state
+
 ```python
 player.is_("started") 
 player.is_("stopped")  
 player.is_("playing")
 player.is_("paused")
 ```
+
 They are all pretty self explanatory. But remember two things:
 1. `player.is_("stopped")` might be the most important state because you shouldn't call any other function when the player is stopped (Except restart and stop).
 1. `is_("paused")` is **not** equal to `not is_("playing")`
@@ -439,15 +462,13 @@ It implements all the methods a `RecordingPlayer` implements too
 # Event Register
 One of my to-dos was an event register. This task is accomplished. Here comes the tutorial for this. 
 
-!!!  
-Attention: This part of the module is still experimental and you should treat it like that.   
-!!!  
-
 Let's suppose you are using events and have a deterministic game (No randomness/randomness with a seed). You just need to do four things to record your game. 
 1. `import EventRegister from EventRegister`
 1. Create a new `EventRegister` object
 1. Get your events from the object
 1. Finally, save the registered events.
+
+## Example
 
 ```python
 import EventRegister from EventRegister
@@ -471,3 +492,12 @@ finally:
 ```
 
 Now to replay that exact recorded game. Just swap `in` with `out` when instanciating the `reg` object and everything should work exactly as expected.
+
+## Random Seeds
+
+If your game uses randomness - which most games should - it's very simple. 
+This will automatically load or save the seed depending on the mode.  
+
+```python
+reg = EventRegister("in","events.json").seed()
+```
