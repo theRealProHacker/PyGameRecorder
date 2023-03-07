@@ -3,7 +3,7 @@ import json
 import logging
 import random
 import time
-from typing import Any, Callable, Iterable, Optional
+from typing import Any, Callable, Iterable, Optional, Union, List, Dict
 from dataclasses import dataclass, astuple
 import pygame as pg
 
@@ -18,8 +18,8 @@ def skip_none(x, y):
 def dfilter(
     d: dict,
     *,
-    key: Optional[Callable[[Any], bool] | list] = None,
-    value: Optional[Callable[[Any], bool] | list] = None,
+    key: Optional[Union[Callable[[Any], bool], list]] = None,
+    value: Optional[Union[Callable[[Any], bool], list]] = None,
 ):
     """Filter a dictionary by key or value. You must specify either key or value"""
     if (key is None) ^ (value is None):  # xor
@@ -38,7 +38,7 @@ def dfilter(
 start_lambda = lambda starts: lambda k: any((k.startswith(s) for s in starts))
 
 
-def starts_with(s: Iterable[str] | str):
+def starts_with(s: Union[Iterable[str], str]):
     """Returns all the pg.locals that start with any of the given strings"""
     try:
         return dfilter(pg.__dict__, key=start_lambda(s)).values()
@@ -73,7 +73,7 @@ def find(pred: Callable[[Any], bool], l: Iterable) -> Any:
             return x
 
 
-def print_names(l: Iterable[pg.event.Event] | Iterable[int]):
+def print_names(l: Union[Iterable[pg.event.Event], Iterable[int]]):
     try:
         for e in l:
             print(pg.event.event_name(e.type))  # type: ignore
@@ -104,7 +104,7 @@ class SavedEvent:
 
 ################################################################################################
 # compressions
-defaults: dict["str", dict["str", Any]] = {
+defaults: Dict["str", Dict["str", Any]] = {
     "window": {
         "value": None,
         "events": [
@@ -131,7 +131,7 @@ defaults: dict["str", dict["str", Any]] = {
 }
 
 
-def_lookup: dict[int, dict[str, Any]] = defaultdict(dict)
+def_lookup: Dict[int, Dict[str, Any]] = defaultdict(dict)
 
 for attr, d in defaults.items():
     for event in d["events"]:
@@ -228,7 +228,7 @@ class EventRegister:
                     SavedEvent(t, e.__dict__, time_since(self.start))
                 )
 
-    def _get_events(self) -> list[pg.event.Event]:
+    def _get_events(self) -> List[pg.event.Event]:
         assert self._type == "out", "Can only get events when outputting"
         this_events: list[pg.event.Event] = []
         for e in self.rec_events[self._reci :]:
@@ -263,7 +263,7 @@ class EventRegister:
         return this_events
 
     def seed(
-        self, random_seed: int | float | str | bytes | bytearray = 0
+        self, random_seed: Union[int, float, str, bytes, bytearray] = 0
     ) -> "EventRegister":
         """
         Seed the `EventRegister` a random seed.
@@ -278,7 +278,7 @@ class EventRegister:
         random.seed(self.random_seed)
         return self
 
-    def get_events(self) -> list[pg.event.Event]:
+    def get_events(self) -> List[pg.event.Event]:
         """Get the next events. To use an `EventRegister`, call this instead of `pg.event.get()`"""
         events = pg.event.get()
         if self._type == "out":

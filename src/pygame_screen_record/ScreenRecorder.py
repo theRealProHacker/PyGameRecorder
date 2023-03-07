@@ -6,7 +6,7 @@ import threading
 from contextlib import contextmanager
 from functools import wraps
 from threading import Thread
-from typing import Callable, Coroutine, List, Optional, Sequence, Tuple
+from typing import Callable, Coroutine, List, Optional, Sequence, Tuple, Union, List, Dict
 
 import cv2
 import numpy as np
@@ -28,7 +28,7 @@ def ensure_type(var, _type):
         raise TypeError(f"{var=} must by of type {_type=}")
 
 
-AnyPath = str | bytes | os.PathLike[str] | os.PathLike[bytes]
+AnyPath = Union[str, bytes, os.PathLike]
 
 # Test utils
 
@@ -410,7 +410,7 @@ class ScreenRecorder:
     @timer_wrapper
     def save_recordings(
         self,
-        key: str | Sequence[tuple[str, str]] | Callable[[int], tuple[str, str]],
+        key: Union [str, Sequence[Tuple[str, str]], Callable[[int], Tuple[str, str]]],
         save_dir: AnyPath = None,
         blocking: bool = True,
     ):
@@ -448,7 +448,7 @@ except:
     )
 
 
-def add_codec(format: str, codec: int | str):
+def add_codec(format: str, codec: Union[int, str]):
     if type(codec) is str:
         codec = cv2.VideoWriter_fourcc(*codec)
     _codec_dict[format] = codec
@@ -510,7 +510,7 @@ class RecordingSaver:
     def __init__(
         self,
         recordings: List[Recording],
-        key: str | Sequence[tuple[str, str]] | Callable[[int], tuple[str, str]],
+        key: Union[str, Sequence[Tuple[str, str]], Callable[[int], Tuple[str, str]]],
         save_dir: AnyPath = None,
         blocking: bool = True,
     ):
@@ -576,7 +576,7 @@ class RecordingSaver:
         if self.save_dir is not None:
             os.chdir(old_wd)
 
-    def save(self) -> Callable[[], List[str]] | List[str]:
+    def save(self) -> Union[Callable[[], List[str]], List[str]]:
         """Saves the given recordings.
 
         If the RecordingSaver was set to blocking then this returns a list of paths.
