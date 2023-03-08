@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygame-screen-record"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Rashid Harvey", email="rashid.harvey@fu-berlin.de" },
 ]
@@ -18,8 +18,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "opencv_python == 4.7.0.68",
-    "pygame == 2.1.3"
+    "opencv_python >= 4.7.0.68",
+    "pygame >= 2.1.3"
 ]
 
 [project.urls]

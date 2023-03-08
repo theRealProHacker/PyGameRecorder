@@ -15,7 +15,7 @@
 
 ## Dependencies
 
-Apart from pygame and python 3.10
+Apart from pygame and python >=3.8
 
 1. opencv-python (includes numpy)
 2. FFmpeg if you want to save videos
