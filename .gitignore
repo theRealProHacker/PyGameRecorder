@@ -4,3 +4,4 @@ __pycache__
 dist
 build
 pygame_screen_record.egg-info
+venv
