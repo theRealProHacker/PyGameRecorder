@@ -17,8 +17,10 @@ from sys import getsizeof
 import pygame as pg
 from math import sin
 import time
-from pygame_screen_record.ScreenRecorder import ScreenRecorder, RecordingPlayer
+from pygame_screen_record import ScreenRecorder, RecordingPlayer, add_codec
 import logging
+
+add_codec("mp4", "mpv4")
 
 logging.basicConfig(level=logging.DEBUG)
 

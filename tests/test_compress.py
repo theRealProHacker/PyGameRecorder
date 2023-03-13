@@ -1,12 +1,13 @@
+import json
+from copy import copy
+from dataclasses import astuple
+
 from pygame_screen_record.EventRegister import (
+    SavedEvent,
     read,
     single_compress,
     single_decompress,
-    json,
-    SavedEvent,
-    astuple,
 )
-from copy import copy
 
 
 def test_compress():

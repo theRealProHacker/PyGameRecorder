@@ -24,12 +24,15 @@ Apart from pygame and python >=3.8
 
 `pip install pygame-screen-record`
 
+## FAQ
+
+See the FAQ [in the wiki](https://github.com/theRealProHacker/PyGameRecorder/wiki/FAQ)
+
 ## To-Dos
 
-1. Extend the available video formats for saving 
 2. Event recording (mouse, key, quit, etc.) ✔️
 3. Sound recording (Either event based with function hooking or as numpy arrays)
-4. A proper video player (right now just use [MoviePy])
+4. A proper video player
 5. Add a wiki
 
 ## Contributing
@@ -39,6 +42,8 @@ File any bugs or feature requests as GitHub issues. After your idea was approved
 # How To Use
 
 Most users just want to make a recording of their game and save it in a video file. Here comes how.
+
+> Note: I am using `pg` as an alias for `pygame` in the following code snippets and I `import ScreenRecorder` instead of `pygame_screen_record.ScreenRecorder`. 
 
 A typical game script might look like this:
 
@@ -87,7 +92,7 @@ finally:
 ```
 
 This code will record your screen the whole game and then save it in the current working directory as `my_recording.mp4`.
-Typical values for the frames per second (fps) are 24 (for slow games), 30, 60, 120 (Most displays only refresh at 60 Hertz, so most users won't see a difference upwards of 60 fps). Don't forget that the fps value is (at least in theory) proportional to the memory consumption of your recording.
+Typical values for the frames per second (fps) are 24 (for slow games), 30, 60 and 120 (Most displays only refresh at 60 Hertz, so most users won't see a difference upwards of 60 fps). Don't forget that the fps value is (at least in theory) proportional to the memory consumption of your recording.
 
 One cool thing of many is that you can chain functions:
 
