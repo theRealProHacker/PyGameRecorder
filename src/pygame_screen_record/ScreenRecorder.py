@@ -456,8 +456,6 @@ def add_codec(format: str, codec: Union[int, str]):
 
 def available_formats():
     return [*_codec_dict.keys(), "npz"]
-
-
 """ The available formats to save a recording"""
 
 
@@ -567,7 +565,7 @@ class RecordingSaver:
         for i, rec in enumerate(self.recordings):
             ftuple: Optional[Tuple[str, str]] = self.key(i)
             if ftuple is not None:
-                thread = Thread(target=rec.save_recording, args=(ftuple))
+                thread = Thread(target=rec.save, args=(ftuple))
                 thread.start()
                 threads.append((thread, ".".join(ftuple)))
         for thread, saved_rec in threads:
@@ -832,23 +830,4 @@ class PlayerList:
 
 ##############################################################################################################
 
-
-__all__ = [
-    "ScreenRecorder",
-    "available_formats",
-    "RecordingSaver",
-    "save_recording",
-    "npz_player",
-    "RecordingPlayer",
-]
-
 atexit.register(cleanup)
-
-##############################################################################################################
-# Testing/Demo
-
-if __name__ == "__main__":
-    print("ScreenRecorder")
-
-
-##############################################################################################################
