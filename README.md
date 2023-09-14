@@ -69,7 +69,7 @@ Adding a recorder is very simple:
 
 ```python
 import pygame as pg
-from ScreenRecorder import ScreenRecorder, save_recording
+from ScreenRecorder import ScreenRecorder, save_recordings
 
 pg.init()
 
@@ -86,7 +86,7 @@ try:
 finally:
     recorder.stop_rec()	# stop recording
     recording = recorder.get_single_recording() # returns a Recording
-    save_recording(recording,("my_recording","mp4")) # save the recording as mp4
+    save_recordings(recording,("my_recording","mp4")) # save the recording as mp4
     clean_up()
     pg.quit()
 ```
