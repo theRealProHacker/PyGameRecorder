@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygame-screen-record"
-version = "0.0.4"
+version = "0.0.6"
 authors = [
-  { name="Rashid Harvey", email="rashid.harvey@fu-berlin.de" },
+  { name="Rashid Harvey", email="r.harvey@outlook.de" },
 ]
 description = "A package that allows you to record your pygame game"
 readme = "README.md"

@@ -1,5 +1,9 @@
 Uses [Semantic Versioning](http://semver.org/)
 
+# 0.0.6
+
+Fixed a bug in `README.md` 
+
 # 0.0.4
 
 1. Fixed a simple bug where a nonexistent method was called. 
