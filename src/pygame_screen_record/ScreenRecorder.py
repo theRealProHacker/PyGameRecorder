@@ -246,6 +246,7 @@ class Recording:
     def add_frame(self, frame: pg.surface.Surface):
         """Add a frame to the recording"""
         self.frames.append(compress(frame, self.compress))
+        return self
 
     @property
     def frame_number(self):
@@ -306,6 +307,7 @@ class Recording:
             _surf_to_arr(decompress(frame, self.compress)) for frame in self.frames
         ]
         _save_single(frames, self.fps, self.size, filename)
+        return self
 
 
 class ScreenRecorder:
