@@ -6,7 +6,7 @@ import threading
 from contextlib import contextmanager
 from functools import wraps
 from threading import Thread
-from typing import Callable, Coroutine, List, Optional, Sequence, Tuple, Union, List, Dict
+from typing import Callable, Coroutine, List, Optional, Sequence, Tuple, Union
 
 import cv2
 import numpy as np
@@ -287,17 +287,13 @@ class Recording:
         except IndexError:
             return 0
 
-    def save(self, ftuple: Tuple[str, str]) -> str:
-        """Saves a single recording given a recording and a (filename,extension) tuple. Blocks until the recording is saved.
+    def save(self, filename: str):
+        """Saves a single recording given a recording and a filename. Blocks until the recording is saved.
 
         Parameters
         ----------
-        ftuple: Tuple[str,str]
-            A (filename, extension) tuple. Available extensions are in the documentation
-
-        Returns
-        -------
-        The path of the saved recording
+        filename: str
+            A filename to save to. Available extensions are in the documentation or by calling `available_formats()`
 
         Raises
         ------
@@ -305,18 +301,17 @@ class Recording:
             If a video is being saved and ffmpeg is not installed
         """
         logging.debug("Saving recording to: " +
-                      os.path.abspath(".".join(ftuple)))
+                      os.path.abspath(filename))
         frames: List[np.ndarray] = [
             _surf_to_arr(decompress(frame, self.compress)) for frame in self.frames
         ]
-        _save_single(frames, self.fps, self.size, *ftuple)
-        return ".".join(ftuple)
+        _save_single(frames, self.fps, self.size, filename)
 
 
 class ScreenRecorder:
     def __init__(
         self,
-        fps: float = None,
+        fps: float = 60,
         surf: Optional[pg.surface.Surface] = None,
         compress: int = 0,
         stream=None,
@@ -332,7 +327,7 @@ class ScreenRecorder:
         stream: Implements .send()
             A stream that gets a Recording object when the recording is stopped with recorder.stop_rec_to_stream()
         """
-        self.fps: float = fps or 60
+        self.fps = fps
         self.surf = surf or pg.display.get_surface()
         self.compress = compress
         self.stream = stream
@@ -345,7 +340,7 @@ class ScreenRecorder:
         self.running_thread: Optional[RecordingThread] = None
         self.recordings: List[Recording] = []
 
-    def start_rec(self, fps: float = None):
+    def start_rec(self, fps: Optional[float] = None):
         """Starts a recording
         @params:
         fps: overrides the classes default fps for this recording
@@ -393,7 +388,7 @@ class ScreenRecorder:
         self._stop_rec()
         return self
 
-    def get_single_recording(self):
+    def get_recording(self):
         """
         This gets the first recording in the list of recordings.
         In many cases you just have one recording and then you get that one
@@ -406,12 +401,20 @@ class ScreenRecorder:
         Get all recordings until now
         """
         return self.recordings
+    
+    def save_recording(self, filename: str):
+        """Saves a single recording given a filename. 
+        @params:
+        filename: str
+            A filename to save to. Available extensions are in the documentation or by calling `available_formats()`
+        """
+        return self.get_recording().save(filename)
 
-    @timer_wrapper
+    # @timer_wrapper
     def save_recordings(
         self,
-        key: Union [str, Sequence[Tuple[str, str]], Callable[[int], Tuple[str, str]]],
-        save_dir: AnyPath = None,
+        key: Union[str, Sequence[str], Callable[[int], Optional[str]]],
+        save_dir: Optional[AnyPath] = None,
         blocking: bool = True,
     ):
         """Inits a RecordingSaver with the recordings and calls its save function with the given arguments.
@@ -439,24 +442,26 @@ class ScreenRecorder:
 # https://stackoverflow.com/a/55596396/15046005
 codec_dict = {"avi": "DIVX", "webm": "WEBM", "mp4": "h264"}
 
+def fourcc(*args: str)->int:
+    return cv2.VideoWriter_fourcc(*args) # type: ignore
+
 try:
-    _codec_dict = {key: cv2.VideoWriter_fourcc(
-        *v) for key, v in codec_dict.items()}
+    _codec_dict = {key: fourcc(*v) for key, v in codec_dict.items()}
 except:
     logging.info(
-        "FFMPEG is not available. Install it to save your recording as a video"
+        "ffmpeg is not available. Install it to save your recording as a video"
     )
 
-
 def add_codec(format: str, codec: Union[int, str]):
-    if type(codec) is str:
-        codec = cv2.VideoWriter_fourcc(*codec)
-    _codec_dict[format] = codec
+    """
+    Adds a codec to the codec_dict to allow saving it via ffmpeg
+    """
+    _codec_dict[format] = fourcc(*codec) if isinstance(codec, str) else codec
 
 
 def available_formats():
+    """ The available formats to save a recording"""
     return [*_codec_dict.keys(), "npz"]
-""" The available formats to save a recording"""
 
 
 @contextmanager
@@ -470,13 +475,13 @@ def _video_writer(path: str, codec: int, fps: float, dimensions: Tuple[int, int]
 
 
 def _save_single(
-    frames: List[np.ndarray], fps: float, size: Tuple[int, int], fname: str, ext: str
+    frames: List[np.ndarray], fps: float, size: Tuple[int, int], filename: str
 ):
-    path = f"{fname}.{ext}"
+    ext = os.path.splitext(filename)[1][1:]
     if ext == "npz":
-        return _save_as_np(frames, fps, size, path)
+        return _save_as_np(frames, fps, size, filename)
     elif codec_dict.get(ext):
-        return _save_as_video(frames, fps, size, path, ext)
+        return _save_as_video(frames, fps, size, filename, ext)
     raise ValueError("Extension not supported: " + ext)
 
 
@@ -492,9 +497,9 @@ def _save_as_video(
                 ))
     except NameError as e:
         if e.name == "_codec_dict":
-            raise RuntimeError("FFMPEG isn't available.")
+            raise RuntimeError("ffmpeg isn't available.")
         else:
-            raise
+            raise e
 
 
 def _save_as_np(frames: List[np.ndarray], fps: float, size: Tuple[int, int], path: str):
@@ -504,12 +509,12 @@ def _save_as_np(frames: List[np.ndarray], fps: float, size: Tuple[int, int], pat
 
 class RecordingSaver:
     """A class that is responsible for saving the recordings"""
-
+    key: Callable[[int], Optional[str]]
     def __init__(
         self,
         recordings: List[Recording],
-        key: Union[str, Sequence[Tuple[str, str]], Callable[[int], Tuple[str, str]]],
-        save_dir: AnyPath = None,
+        key: Union[str, Sequence[str], Callable[[int], Optional[str]]],
+        save_dir: Optional[AnyPath] = None,
         blocking: bool = True,
     ):
         """Inits a RecordingSaver
@@ -518,36 +523,33 @@ class RecordingSaver:
         ----------
         recordings: List[Recording]
             The list of recordings to save.
-        key: str | Sequence[tuple[str,str]] | Callable[[int],tuple[str,str]]
+        key: str | Sequence[str] | Callable[int, Optional[str]]
             If the key is a str then it is the format in which the recordings are saved.
-            Otherwise the key will be given the index of the recording and should return a valid (filename,extension) tuple for each recording.
+            Otherwise the key will be given the index of the recording and should return a valid filename for each recording.
             If the key instead returns None the recording will be skipped.
         save_dir: AnyPath
             The directory where to save the recordings. Takes anything that os.chdir takes. If not given or set to None then saves in the current directory ""
         blocking: bool
             Whether to block the calling process until the recordings are all saved or not. Easiest and default is True
         """
-
-        def str_lambda(x: int):
-            return ("recording_" + str(x), key)
-
-        _Key = Callable[[int], Optional[Tuple[str, str]]]
-        _key: _Key
         try:
             if isinstance(key, str):
-                _key = str_lambda
+
+                def str_lambda(x: int):
+                    return f"recording_{x}.{key}"
+
+                self._key = str_lambda
             elif callable(key):
-                _key = key
+                self._key = key # type: ignore # We trust the user to give a valid callable
             else:
-                _key = key.__getitem__
+                self._key = lambda x: key[x]
         except NameError as e:
             if e.name == "__getitem__":
                 raise TypeError(
-                    "key has to be one of str, callable or SupportsIndex")
+                    "key has to be one of str, callable or Sequence")
             else:
                 raise
         self.recordings = recordings
-        self.key = _key
         self.save_dir = save_dir or "."
         self.blocking = blocking
         self.saved_recordings: List[str] = []
@@ -555,7 +557,7 @@ class RecordingSaver:
             save_dir
         )
 
-    def _save(self):
+    def _save(self)->None:
         """Thread target function for saving"""
         assert self.recordings is not None, "recordings have to be set before saving"
         if self.save_dir is not None:
@@ -563,11 +565,11 @@ class RecordingSaver:
             os.chdir(self.save_dir)
         threads = []
         for i, rec in enumerate(self.recordings):
-            ftuple: Optional[Tuple[str, str]] = self.key(i)
-            if ftuple is not None:
-                thread = Thread(target=rec.save, args=(ftuple))
+            filename: Optional[str] = self.key(i)
+            if filename is not None:
+                thread = Thread(target=rec.save, args=filename)
                 thread.start()
-                threads.append((thread, ".".join(ftuple)))
+                threads.append((thread, filename))
         for thread, saved_rec in threads:
             thread.join()
             self.saved_recordings.append(saved_rec)
@@ -822,10 +824,6 @@ class NPZPlayer(RecordingPlayer):
             return frame
         except KeyError:
             raise IndexError
-
-
-class PlayerList:
-    """Still in development: Plays a List of players"""
 
 
 ##############################################################################################################

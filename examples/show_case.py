@@ -85,9 +85,9 @@ def main():
     Now the recording has finished and we save the recording. 
     The screen will be black as long as the saving takes
     """
-    recording = recorder.get_single_recording()
+    recording = recorder.get_recording()
     print(getsizeof(recording))
-    recording.save(("my_recording1", "mp4"))
+    recording.save("my_recording1.mp4")
 
     player = RecordingPlayer(recording)
     player.play()
