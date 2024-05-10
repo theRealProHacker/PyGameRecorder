@@ -70,8 +70,8 @@ pg.init()
 
 init_code()
 
-recorder = ScreenRecorder(60) # Pass your desired fps
-recorder.start_rec() # Start recording
+recorder = ScreenRecorder(60) # pass your desired fps
+recorder.start_rec() # start recording
 
 try:
     while True:
