@@ -80,7 +80,7 @@ try:
         drawing()
 finally:
     recorder.stop_rec()	# stop recording
-    recording = recorder.save_recording("my_recording.mp4") # returns a Recording
+    recorder.save_recording("my_recording.mp4") # saves the last recording
     clean_up()
     pg.quit()
 ```
