@@ -1,5 +1,9 @@
 Uses [Semantic Versioning](http://semver.org/)
 
+# 0.1.1
+
+A hotfix addressing an issue in the README and a few more chaining opportunities.
+
 # 0.1.0
 
 1. Replaced the (filename, extension) tuple to a single filename string that includes the extension for simplicity. The extension is extracted using `os.path.splitext()`
