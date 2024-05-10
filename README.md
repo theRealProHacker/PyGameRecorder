@@ -1,6 +1,6 @@
-# A Simple PyGame ScreenRecorder
+# A Simple pygame ScreenRecorder
 
-## Why you should use this module?
+## Why you should use pygame ScreenRecorder?
 
 1. Relatively high accuracy
 2. No (noticable) performance issues
@@ -36,7 +36,7 @@ File any bugs or feature requests as GitHub issues. Any comments are always welc
 
 # How To Use
 
-Most users just want to make a recording of their game and save it in a video file. Here comes how.
+Probably you just want to make a recording of their game and save it in a video file. Here comes how.
 
 > Note: I am using `pg` as an alias for `pygame` in the following code snippets
 
@@ -118,7 +118,7 @@ In the example, we only recorded a single recording. However, you can record as 
 
 Finally, when you want to save your recordings call `save_recordings("mp4")`. More detailed saving options are given in the next chapter [Advanced Saving Options](#advanced-saving-options). 
 
-## Record any Surface
+## Record any `Surface`
 
 In most cases you want to record the whole screen. But, you can also pass an optional argument `surf` to a `ScreenRecorder`.
 
@@ -189,7 +189,7 @@ The time between (delta time) two frames in ms.
 `recordings: List[Recording]`  
 selfexp. Same as `get_recordings()`
 
-## Post-Processing a Recording
+## Post-Processing a recording
 
 1. Add frames
 2. Resize
@@ -201,7 +201,7 @@ You can always append frames to a recording:
 
 `recording.add_frame(frame: pg.Surface)`
 
-## Resize a Recording
+## Resize a recording
 
 You might need to rescale a whole recording to a specific size:
 
@@ -239,7 +239,7 @@ selfexp.
 
 # Advanced Saving Options
 
-Introducing the RecordingSaver
+Introducing the `RecordingSaver`
 
 `RecordingSaver(recordings: List[Recording], key: str | Sequence[str] | Callable[[int], Optional[str]], save_dir: AnyPath = None, blocking: bool = True)`
 
