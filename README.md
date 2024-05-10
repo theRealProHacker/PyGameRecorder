@@ -8,10 +8,6 @@
 4. Straightforward usage
 5. The codebase is well commented and typed
 
-## Why you shouldn't use this module?
-
-1. The library is written in pure Python and therefore cannot compare with any lower level library.
-
 ## Dependencies
 
 Apart from pygame and python >=3.8
