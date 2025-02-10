@@ -312,7 +312,7 @@ print("Second save took:", time.time() - start)
 
 The second option is favorable because it takes less time than the first. 
 
-## Memory Cosniderations
+## Memory Considerations
 
 We talked about how to efficiently save your recordings (from a time aspect). But now we talk about how you can reduce memory consumption. Generally, all video recordings will be automatically compressed by FFmpeg/numpy. However, there are three ways you can reduce memory consumption:  
 1. Reduce fps. One cool thing about this ScreenRecorder is that you can record at a different framerate than you play the game. For example you can have a game frame rate of 60 fps but only record at 30 fps. This would halve the memory usage in comparison to if you recorded at 60 fps. 
