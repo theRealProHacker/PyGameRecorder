@@ -3,7 +3,7 @@
 ## Why you should use pygame ScreenRecorder?
 
 1. Relatively high accuracy
-2. No (noticable) performance issues
+2. No (noticeable) performance issues
 3. Recording FPS is not bound to game FPS
 4. Straightforward usage
 5. The codebase is well commented and typed
@@ -58,7 +58,7 @@ finally:
     pg.quit()
 ```
 
-The `try - finally - statement` is very important to catch any exceptions and clean up whether the game ended naturely or not.
+The `try - finally - statement` is very important to catch any exceptions and clean up whether the game ended naturally or not.
 
 Adding a recorder is very simple:
 
@@ -300,7 +300,7 @@ print("First save took:", time.time() - start)
 start = time.time()
 join1 = recorder.save_recordings("mp4", "saved_files2", False)
 join2 = recorder.save_recordings("npz", "saved_files2", False)
-print("This message doen't have to wait for the save. Instead it comes almost instantly")
+print("This message doesn't have to wait for the save. Instead it comes almost instantly")
 
 time.sleep(2) # We add some more virtual io with time.sleep
 
@@ -444,7 +444,7 @@ I showed you how to save your recordings as `npz` files. However, you also need 
 player = NPZPlayer("my_npz_file.npz", on_stop=my_on_stop).play()
 ```
 
-In all other regards it is the same as the `RecprdingPlayer`
+In all other regards it is the same as the `RecordingPlayer`
 
 # Event Register
 One of my to-dos was an event register. This task is accomplished. Here comes the tutorial for this. 
@@ -478,7 +478,7 @@ finally:
     reg.save()
 ```
 
-Now to replay that exact recorded game. Just swap `in` with `out` when instanciating the `reg` object and everything should work exactly as expected.
+Now to replay that exact recorded game. Just swap `in` with `out` when instantiating the `reg` object and everything should work exactly as expected.
 
 ## Random Seeds
 
