@@ -421,8 +421,8 @@ class ScreenRecorder:
     ):
         """Inits a RecordingSaver with the recordings and calls its save function with the given arguments.
         @params:
-        key (str | Sequence[tuple[str,str]] | Callable[[int],tuple[str,str]]): If the key is a str then it is the format in which the recordings are saved.
-        Otherwise the key will be given the index of the recording and should return a valid (filename,extension) tuple for each recording.
+        key (str | Sequence[str] | Callable[[int], Optional[str]]): If the key is a str then it is the format in which the recordings are saved.
+        Otherwise the key will be given the index of the recording and should return a valid filename for each recording.
         If the key instead returns None the recording will be skipped.
         save_dir (AnyPath): The directory where to save the recordings. Takes anything that os.chdir takes. Defaults to ""
         blocking (bool): Whether to block the calling process until the recordings are all saved or not. Easiest and default is True
@@ -511,7 +511,7 @@ def _save_as_np(frames: List[np.ndarray], fps: float, size: Tuple[int, int], pat
 
 class RecordingSaver:
     """A class that is responsible for saving the recordings"""
-    key: Callable[[int], Optional[str]]
+    _key: Callable[[int], Optional[str]]
     def __init__(
         self,
         recordings: List[Recording],
@@ -567,9 +567,9 @@ class RecordingSaver:
             os.chdir(self.save_dir)
         threads = []
         for i, rec in enumerate(self.recordings):
-            filename: Optional[str] = self.key(i)
+            filename: Optional[str] = self._key(i)
             if filename is not None:
-                thread = Thread(target=rec.save, args=filename)
+                thread = Thread(target=rec.save, args=(filename,))
                 thread.start()
                 threads.append((thread, filename))
         for thread, saved_rec in threads:

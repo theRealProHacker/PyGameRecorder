@@ -144,7 +144,7 @@ A stream in this sense is any object that implements a `send` function that can 
 ```python
 class Stream:
     def send(self, rec):
-        print(f"Recording received with {rec.frame_number} frames, a size of {rec.size} and a total length of {rec.length} s")
+        print(f"Recording received with {rec.frame_number} frames, a size of {rec.size} and a total length of {rec.total_length} s")
 
 my_stream = Stream()
 recorder = ScreenRecorder(stream=my_stream)
@@ -265,14 +265,14 @@ saved_recordings = recorder.save_recordings("mp4", "saved_files")
 
     Maybe its worth to mention the `npz` file format. It is not a classical video format but actually a way to save numpy arrays (npz = **n**um**p**y **z**ipped). If you don't need to share the recording in the internet or so, this is an efficient alternative. Also this library has built-in support for replaying these files.    
 
-    If key is a sequence then the ith recording will be saved as the ith element of the recording. If an element is `None` the according recording will be skipped.   
+    If key is a sequence then the ith recording will be saved as the ith element of the sequence. If an element is `None` the according recording will be skipped.   
 
     It is a very similar case if you give a function. The function gets an int passed and should return `None` or a filename.
 
     An example for such a key is
 
     ```python
-    key = lambda x: if x%2 == 0 then None else ("recording_{x}","mp4")
+    key = lambda x: None if x % 2 == 0 else f"recording_{x}.mp4"
     ```
 
     This will return `None` (and skip the save) for every recording with an even index. 
@@ -283,7 +283,7 @@ Whether the save should block. Defaults to `True`
 
 The save returns a list of paths to the recordings in the given directory. This list will not **always** be the same length as the recordings in the `Recorder` but will only return a list of recordings that were actually saved. 
 
-However, if you set `block = False` the function will return another function that returns the list of paths and must be called before the script ends! Now you might ask yourself why that makes any sense. Here is an example
+However, if you set `blocking = False` the function will return another function that returns the list of paths and must be called before the script ends! Now you might ask yourself why that makes any sense. Here is an example
 
 ```python
 # At this point we have a recorder that recorded some recordings
@@ -450,7 +450,7 @@ In all other regards it is the same as the `RecordingPlayer`
 One of my to-dos was an event register. This task is accomplished. Here comes the tutorial for this. 
 
 Let's suppose you are using events and have a deterministic game (No randomness/randomness with a seed). You just need to do four things to record your game. 
-1. `import EventRegister from EventRegister`
+1. `from pygame_screen_record import EventRegister`
 1. Create a new `EventRegister` object
 1. Get your events from the object
 1. Finally, save the registered events.
@@ -458,7 +458,7 @@ Let's suppose you are using events and have a deterministic game (No randomness/
 ## Example
 
 ```python
-import EventRegister from EventRegister
+from pygame_screen_record import EventRegister
 
 pg.init()
 

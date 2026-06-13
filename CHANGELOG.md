@@ -1,5 +1,21 @@
 Uses [Semantic Versioning](http://semver.org/)
 
+# 0.1.2
+
+Bug fix + documentation hotfix.
+
+Fixed `ScreenRecorder.save_recordings()` and `RecordingSaver.save()`, which were
+silently broken: `RecordingSaver._save` referenced `self.key` instead of
+`self._key`, and the per-recording save thread was started with `args=filename`
+(a str) instead of `args=(filename,)`, so saving multiple recordings never worked.
+Added a regression test covering the `npz` save path.
+
+Documentation: corrected the `EventRegister` import in the README (it used invalid
+syntax), fixed the stream example's `rec.length` to `rec.total_length`, updated the
+`save_recordings` key example to the single-filename format introduced in 0.1.0 (it
+still showed the old `(filename, extension)` tuple), and aligned the
+`blocking`/`sequence` wording.
+
 # 0.1.1
 
 A hotfix addressing an issue in the README and a few more chaining opportunities.
